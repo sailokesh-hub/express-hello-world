@@ -5,9 +5,9 @@ const port = process.env.PORT || 3001;
 
 const connection = mysql.createConnection({
   host: '193.203.184.53',
-  user: 'u540642530_SaiLokesh',
+  user: 'SaiLokesh',
   password: '24Hr7@456it',
-  database: 'u540642530_User_Forms',
+  database: 'User_Forms',
 });
 
 app.get("/", (req, res) => res.type('html').send(html));

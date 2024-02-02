@@ -4,10 +4,10 @@ const mysql = require('mysql2/promise');
 const port = process.env.PORT || 3001;
 
 const connection = mysql.createConnection({
-  host: '193.203.184.53',
-  user: 'SaiLokesh',
-  password: '24Hr7@456it',
-  database: 'User_Forms',
+  host: 'srv1327.hstgr.io',
+  user: 'u540642530_SaiLokesh',
+  password: '24HR7@456it',
+  database: 'u540642530_User_Forms',
 });
 
 app.get("/", (req, res) => res.type('html').send(html));

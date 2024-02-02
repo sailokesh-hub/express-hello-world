@@ -6,7 +6,7 @@ const port = process.env.PORT || 3001;
 const connection = mysql.createConnection({
   host: 'srv1327.hstgr.io',
   user: 'u540642530_SaiLokesh',
-  password: '24HR7@456it',
+  password: '24Hr7@45it',
   database: 'u540642530_User_Forms',
 });
 

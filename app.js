@@ -15,6 +15,23 @@ app.get("/get", (request, response) => {
   response.send("you are hacked");
 });
 
+app.post('/submit-form', async (req, res) => {
+  try {
+    const formData = req.body;
+
+    // Use formData to insert data into the MySQL database
+    const [result] = await connection.execute(
+      'INSERT INTO form_data (name, email, phone, message) VALUES (?, ?, ?, ?)',
+      [formData.name, formData.email, formData.phone, formData.message]
+    );
+
+    res.status(200).json({ success: true, result });
+  } catch (error) {
+    console.error('Error handling form submission:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 server.keepAliveTimeout = 120 * 1000;

@@ -3,6 +3,14 @@ const app = express();
 const mysql = require('mysql2/promise');
 const port = process.env.PORT || 3001;
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://24hr7comit.site');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
 const connection = mysql.createConnection({
   host: 'srv1327.hstgr.io',
   user: 'u540642530_SaiLokesh',

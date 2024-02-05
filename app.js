@@ -14,7 +14,7 @@ app.use((req, res, next) => {
 });
 
 const connection = mysql.createConnection({
-  host: 'srv1327.hstgr.io',
+  host: '193.203.184.53',
   user: 'u540642530_SaiLokesh',
   password: '24Hr7@45it',
   database: 'u540642530_User_Forms',

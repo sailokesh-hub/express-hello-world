@@ -30,11 +30,11 @@ const users = [
 ];
 
 // Route to handle login requests
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   // Find user by email
-  connection.query('SELECT * FROM users WHERE email = ?', [email], (error, results) => {
+  const results = await connection.query('SELECT * FROM users WHERE email = ?', [email], (error, results) => {
     if (error) {
       console.error('Error querying database:', error);
       return res.status(500).json({ success: false, message: "An error occurred" });

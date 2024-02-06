@@ -31,7 +31,7 @@ app.post('/submit-form', async (req, res) => {
     const formData = req.body;
 
     // Use formData to insert data into the MySQL database
-    const [result] = await connection.execute(
+    const [result] = await connection.query(
       'INSERT INTO form_data (name, email, phone, message) VALUES (?, ?, ?, ?)',
       [formData.name, formData.email, formData.phone, formData.message]
     );

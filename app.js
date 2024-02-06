@@ -24,6 +24,32 @@ const connection = mysql.createConnection({
 
 app.get("/", (req, res) => res.type('html').send(html));
 
+const users = [
+  { email: "madhusir", password: "madhusir },
+  { email: "vinaysir", password: "vinaysir" },
+];
+
+// Route to handle login requests
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  // Find user by email
+  connection.query('SELECT * FROM users WHERE email = ?', [email], (error, results) => {
+    if (error) {
+      console.error('Error querying database:', error);
+      return res.status(500).json({ success: false, message: "An error occurred" });
+    }
+
+    // Check if user exists and password matches
+    const user = results[0]; // Assuming email is unique
+    if (!user || user.password !== password) {
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
+    }
+
+    // Authentication successful
+    res.status(200).json({ success: true, message: "Login successful" });
+});
+
 app.get("/get", (request, response) => {
   response.send("you are hacked");
 });

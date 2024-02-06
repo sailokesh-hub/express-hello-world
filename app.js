@@ -15,6 +15,11 @@ app.use((req, res, next) => {
   next();
 });
 
+app.options('/login', (req, res) => {
+  res.sendStatus(200);
+});
+
+
 const connection = mysql.createConnection({
   host: 'srv1327.hstgr.io',
   user: 'u540642530_SaiLokesh',

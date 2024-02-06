@@ -24,11 +24,6 @@ const connection = mysql.createConnection({
 
 app.get("/", (req, res) => res.type('html').send(html));
 
-const users = [
-  { email: "madhusir", password: "madhusir },
-  { email: "vinaysir", password: "vinaysir" },
-];
-
 // Route to handle login requests
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -47,7 +42,7 @@ app.post("/login", async (req, res) => {
     }
 
     // Authentication successful
-    res.status(200).json({ success: true, message: "Login successful" });
+    res.status(200).json({ success: true, message: "Login successful", redirectTo: "/Services/services.html" });
 });
 
 app.get("/get", (request, response) => {

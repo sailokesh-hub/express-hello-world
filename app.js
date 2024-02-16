@@ -14,11 +14,10 @@ const port = process.env.PORT || 3001;
 
 
 app.use(cors());
-app.use(express.json());
 app.use(fileUpload());
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://24hr7comit.site');
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost/react/login');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Allow-Credentials', 'true');

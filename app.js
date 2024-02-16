@@ -2,6 +2,14 @@ const express = require("express");
 const app = express();
 const mysql = require('mysql');
 const cors = require('cors');
+
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const path = require("path");
+const fileUpload = require("express-fileupload");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+
 const port = process.env.PORT || 3001;
 
 

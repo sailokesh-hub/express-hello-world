@@ -30,7 +30,8 @@ app.options('/login', (req, res) => {
 });
 
 
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
+  connectionLimit: 10,
   host: 'srv1327.hstgr.io',
   user: 'u540642530_SaiLokesh',
   password: '24Hr7@45it',

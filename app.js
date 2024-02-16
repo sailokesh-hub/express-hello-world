@@ -147,23 +147,24 @@ const verifyToken = async (request, response, next) => {
 app.post("/register", async (request, response) => {
   const { username, password, email } = request.body;
   const hashedPassword = await bcrypt.hash(password, 10);
+  console.log(hashedPassword)
 
   // Check if the 'user' table exists, if not, create it
-  const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS users (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      username VARCHAR(255) NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      email VARCHAR(255) NOT NULL
-    )
-  `;
+  // const createTableQuery = `
+  //   CREATE TABLE IF NOT EXISTS users (
+  //     id INT AUTO_INCREMENT PRIMARY KEY,
+  //     username VARCHAR(255) NOT NULL,
+  //     password VARCHAR(255) NOT NULL,
+  //     email VARCHAR(255) NOT NULL
+  //   )
+  // `;
 
-  connection.query(createTableQuery, async (tableError) => {
-    if (tableError) {
-      console.error("Error creating 'user' table:", tableError);
-      response.status(500).send("Internal Server Error");
-      return;
-    }
+  // connection.query(createTableQuery, async (tableError) => {
+  //   if (tableError) {
+  //     console.error("Error creating 'user' table:", tableError);
+  //     response.status(500).send("Internal Server Error");
+  //     return;
+  //   }
 
     const createQuery =
       "INSERT INTO users(username, password, email) VALUES (?, ?, ?)";

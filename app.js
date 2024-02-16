@@ -36,6 +36,77 @@ const connection = mysql.createConnection({
   database: 'u540642530_User_Forms',
 });
 
+//validate username in db
+const checkUserName = async (request, response, next) => {
+  const { username } = request.body;
+  const userPresentQuery = "SELECT username FROM users WHERE username = ?";
+
+  try {
+    const dbResponse = await new Promise((resolve, reject) => {
+      connection.query(userPresentQuery, [username], (error, results) => {
+        if (error) {
+          console.error("Error executing user presence query:", error);
+          reject(error);
+          return;
+        }
+        resolve(results[0]);
+      });
+    });
+
+    if (!dbResponse || !dbResponse.username) {
+      response.status(400).send("Invalid user");
+      return;
+    }
+
+    const user = dbResponse.username;
+    if (user === username) {
+      request.username = username;
+      next();
+    } else {
+      response.status(400).send("Invalid user");
+    }
+  } catch (error) {
+    console.error("Error checking user name:", error);
+    response.status(500).send("Internal Server Error");
+  }
+};
+
+//validate password in db
+const checkPassword = async (request, response, next) => {
+  const { username } = request;
+  const { password } = request.body;
+  const getPasswordQuery = "SELECT password FROM users WHERE username = ?";
+
+  try {
+    const dbResponse = await new Promise((resolve, reject) => {
+      connection.query(getPasswordQuery, [username], (error, results) => {
+        if (error) {
+          console.error("Error executing get password query:", error);
+          reject(error);
+          return;
+        }
+        resolve(results[0]);
+      });
+    });
+
+    if (!dbResponse || !dbResponse.password) {
+      response.status(400).send("Invalid password");
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, dbResponse.password);
+    if (isPasswordValid) {
+      request.password = password;
+      next();
+    } else {
+      response.status(400).send("Invalid password");
+    }
+  } catch (error) {
+    console.error("Error checking password:", error);
+    response.status(500).send("Internal Server Error");
+  }
+};
+
 app.get("/", (req, res) => res.type('html').send(html));
 
 // Route to handle login requests
@@ -45,7 +116,123 @@ app.get("/get", (request, response) => {
   response.send("you are hacked");
 });
 
-app.post("/login", async (req, res) => {
+const verifyToken = async (request, response, next) => {
+  const authHeader = request.headers["authorization"];
+
+  if (!authHeader) {
+    response.status(401).send("Invalid JWT Token: Token missing");
+    return;
+  }
+
+  const jwtToken = authHeader.split(" ")[1];
+
+  if (!jwtToken) {
+    response.status(401).send("Invalid JWT Token: Token missing");
+    return;
+  }
+
+  try {
+    const payload = await jwt.verify(jwtToken, "SECRET_KEY");
+    request.username = payload.username;
+    next();
+  } catch (error) {
+    console.error("Error verifying JWT token:", error);
+    response.status(401).send("Invalid JWT Token");
+  }
+};
+
+app.post("/register", checkUserPresent, async (request, response) => {
+  const { username, password, email } = request.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Check if the 'user' table exists, if not, create it
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(255) NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL
+    )
+  `;
+
+  connection.query(createTableQuery, async (tableError) => {
+    if (tableError) {
+      console.error("Error creating 'user' table:", tableError);
+      response.status(500).send("Internal Server Error");
+      return;
+    }
+
+    const createQuery =
+      "INSERT INTO users(username, password, email) VALUES (?, ?, ?)";
+
+    if (password.length < 6) {
+      response.status(400).send("Password is too short");
+      return;
+    }
+
+    try {
+      connection.query(
+        createQuery,
+        [username, hashedPassword, email],
+        async (error) => {
+          if (error) {
+            console.error("Error executing registration query:", error);
+            response.status(500).send("Internal Server Error");
+            return;
+          }
+
+          const payload = { username: username };
+          const jwtToken = await jwt.sign(payload, "SECRET_KEY");
+
+          response.json({ message: "User created successfully", jwtToken });
+          console.log("User created");
+        }
+      );
+    } catch (error) {
+      console.error("Error creating user:", error);
+      response.status(500).send("Internal Server Error");
+    }
+  });
+});
+
+app.post("/login", checkUserName, checkPassword, async (req, res) => {
+  const { username } = req.body;
+  const query = "SELECT username, password FROM users WHERE username = ?";
+
+  connection.query(query, [username], async (err, results) => {
+    try {
+      if (err) {
+        console.error("Error executing login query: ", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (results.length > 0) {
+        const dbPassword = results[0].password;
+
+        // Now you have the hashed password from the database
+        const isPasswordValid = await bcrypt.compare(req.password, dbPassword);
+
+        if (isPasswordValid) {
+          const payload = { username: username };
+          const jwtToken = jwt.sign(payload, "SECRET_KEY");
+          return res.json({ jwtToken });
+          console.log("success");
+        } else {
+          return res
+            .status(400)
+            .json({ error: "Invalid username or password" });
+        }
+      } else {
+        return res.status(400).json({ error: "Invalid username or password" });
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+});
+
+app.post("/login1", async (req, res) => {
   const { email, password } = req.body;
 
   // Find user by email

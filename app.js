@@ -37,30 +37,6 @@ const connection = mysql.createConnection({
 });
 
 //check username is valid or not
-const checkUserPresent = async (request, response, next) => {
-  const { username } = request.body;
-  const getUserQuery = "SELECT * FROM users WHERE username = ?";
-
-  try {
-    connection.query(getUserQuery, [username], (error, results) => {
-      if (error) {
-        console.error("Error executing query:", error);
-        response.status(500).send("Internal Server Error");
-        return;
-      }
-
-      if (results.length > 0) {
-        response.status(400).send("User already exists");
-        console.log("user already present");
-      } else {
-        next();
-      }
-    });
-  } catch (error) {
-    console.error("Error checking user presence:", error);
-    response.status(500).send("Internal Server Error");
-  }
-};
 
 //validate username in db
 const checkUserName = async (request, response, next) => {
@@ -167,7 +143,7 @@ const verifyToken = async (request, response, next) => {
   }
 };
 
-app.post("/register", checkUserPresent, async (request, response) => {
+app.post("/register", async (request, response) => {
   const { username, password, email } = request.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 

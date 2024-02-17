@@ -17,6 +17,10 @@ app.use(cors());
 app.use(fileUpload());
 app.use(express.json());
 
+app.use(cors({
+  origin: 'http://122.175.121.60:8080'
+}));
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://122.175.121.60:8080/react');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');

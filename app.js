@@ -42,6 +42,14 @@ const connection = mysql.createPool({
   database: 'u540642530_User_Forms',
 });
 
+const connection_1 = mysql.createPool({
+  connectionLimit: 10,
+  host: 'srv1327.hstgr.io',
+  user: 'u540642530_sai',
+  password: '24HR7comit@',
+  database: 'u540642530_gst_forms',
+});
+
 //check username is valid or not
 
 //validate username in db
